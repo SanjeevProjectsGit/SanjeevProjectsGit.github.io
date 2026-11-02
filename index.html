@@ -1,1647 +1,1174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="Expenses" />
-<title>iPhone Expense Tracker</title>
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Expenses" />
+  <title>iPhone Expense Tracker</title>
 
+  <style>
     :root {
-
       --bg: #F2F2F7;
-
       --card: #FFFFFF;
-
       --text-primary: #1C1C1E;
-
       --text-secondary: #8E8E93;
-
       --separator: #E5E5EA;
-
       --accent: #007AFF;
-
       --danger: #FF3B30;
-
       --success: #34C759;
 
       /* Original & New Categories Colors */
-
       --cat-food: #FF9500;
-
       --cat-transport: #007AFF;
-
       --cat-groceries: #34C759;
-
       --cat-bills: #AF52DE;
-
       --cat-fun: #FF2D55;
-
       --cat-dairy: #00C7BE;
-
       --cat-shopping: #FF375F;
-
       --cat-veggie: #28CD41;
-
       --cat-dryfruits: #A2845E;
-
       --cat-rent: #5856D6;
-
-      --cat-maintenance: #FFcc00;
-
+      --cat-maintenance: #FFCC00;
       --cat-misc: #8E8E93;
 
       --radius-lg: 18px;
-
       --radius-md: 12px;
-
       --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-
     }
 
     @media (prefers-color-scheme: dark) {
-
       :root {
-
         --bg: #000000;
-
         --card: #1C1C1E;
-
         --text-primary: #FFFFFF;
-
         --text-secondary: #98989D;
-
         --separator: #38383A;
-
         --shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-
       }
-
     }
 
     * {
-
       box-sizing: border-box;
-
       margin: 0;
-
       padding: 0;
-
       -webkit-tap-highlight-color: transparent;
-
     }
 
     body {
-
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
-
       background-color: var(--bg);
-
       color: var(--text-primary);
-
       padding-top: env(safe-area-inset-top, 16px);
-
       padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 70px);
-
       display: flex;
-
       justify-content: center;
-
       min-height: 100vh;
-
     }
 
     .app-container {
-
       width: 100%;
-
       max-width: 430px;
-
       padding: 16px;
-
       display: flex;
-
       flex-direction: column;
-
       gap: 16px;
+    }
 
+    /* Login Screen Overlay */
+    #authScreen {
+      width: 100%;
+      max-width: 400px;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 80vh;
+    }
+
+    .auth-title {
+      font-size: 26px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .auth-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .auth-error {
+      color: var(--danger);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 12px;
+      display: none;
     }
 
     /* Top Bar */
-
     .top-bar {
-
       display: flex;
-
       justify-content: space-between;
-
       align-items: center;
-
       padding: 4px 2px;
-
     }
 
     .month-switcher {
-
       display: flex;
-
       align-items: center;
-
-      gap: 10px;
-
+      gap: 8px;
     }
 
     .icon-btn {
-
       background: var(--card);
-
       border: 1px solid var(--separator);
-
       color: var(--text-primary);
-
       width: 34px;
-
       height: 34px;
-
       border-radius: 50%;
-
       font-size: 15px;
-
       font-weight: 600;
-
       cursor: pointer;
-
       display: flex;
-
       align-items: center;
-
       justify-content: center;
-
       box-shadow: var(--shadow);
-
     }
 
     .icon-btn:active {
-
       transform: scale(0.94);
-
     }
 
     .month-label {
-
-      font-size: 18px;
-
+      font-size: 17px;
       font-weight: 700;
-
-      min-width: 130px;
-
+      min-width: 125px;
       text-align: center;
+    }
 
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .currency-btn {
-
       background: var(--card);
-
       border: 1px solid var(--separator);
-
       color: var(--accent);
-
-      padding: 6px 12px;
-
+      padding: 6px 11px;
       border-radius: 20px;
-
-      font-size: 14px;
-
+      font-size: 13px;
       font-weight: 600;
-
       cursor: pointer;
-
       box-shadow: var(--shadow);
+    }
 
+    .logout-btn {
+      background: var(--card);
+      border: 1px solid var(--separator);
+      color: var(--danger);
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    /* User & Sync Status Bar */
+    .sync-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-secondary);
+      padding: 0 4px;
+    }
+
+    .sync-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      margin-right: 5px;
     }
 
     /* Cards */
-
     .card {
-
       background: var(--card);
-
       border-radius: var(--radius-lg);
-
       padding: 18px;
-
       box-shadow: var(--shadow);
-
     }
 
     /* Monthly Summary Header */
-
     .summary-label {
-
       font-size: 13px;
-
       text-transform: uppercase;
-
       letter-spacing: 0.5px;
-
       color: var(--text-secondary);
-
       font-weight: 600;
-
     }
 
     .total-amount {
-
       font-size: 38px;
-
       font-weight: 800;
-
       letter-spacing: -1px;
-
       margin: 4px 0 12px;
-
     }
 
     .stats-row {
-
       display: flex;
-
       justify-content: space-between;
-
       font-size: 13px;
-
       color: var(--text-secondary);
-
       margin-bottom: 14px;
-
     }
 
     .budget-header {
-
       display: flex;
-
       justify-content: space-between;
-
       align-items: center;
-
       font-size: 13px;
-
       margin-bottom: 6px;
-
     }
 
     .edit-budget-btn {
-
       background: none;
-
       border: none;
-
       color: var(--accent);
-
       font-size: 13px;
-
       font-weight: 600;
-
       cursor: pointer;
-
     }
 
     .progress-track {
-
       height: 8px;
-
       background: var(--separator);
-
       border-radius: 99px;
-
       overflow: hidden;
-
     }
 
     .progress-fill {
-
       height: 100%;
-
       background: var(--accent);
-
       border-radius: 99px;
-
       width: 0%;
-
       transition: width 0.3s ease, background-color 0.3s ease;
-
     }
 
     /* Apple Card Category Breakdown */
-
     .section-title {
-
       font-size: 15px;
-
       font-weight: 700;
-
       margin-bottom: 12px;
-
       display: flex;
-
       justify-content: space-between;
-
       align-items: center;
-
     }
 
     .clear-filter-btn {
-
       font-size: 12px;
-
       font-weight: 600;
-
       color: var(--accent);
-
       background: none;
-
       border: none;
-
       cursor: pointer;
-
       display: none;
-
     }
 
     .apple-bar {
-
       height: 14px;
-
       background: var(--separator);
-
       border-radius: 7px;
-
       display: flex;
-
       overflow: hidden;
-
       gap: 2px;
-
       margin-bottom: 14px;
-
     }
 
     .bar-segment {
-
       height: 100%;
-
       transition: width 0.35s ease;
-
     }
 
     .category-pills {
-
       display: flex;
-
       flex-wrap: wrap;
-
       gap: 8px;
-
     }
 
     .cat-pill {
-
       display: flex;
-
       align-items: center;
-
       gap: 6px;
-
       padding: 6px 10px;
-
       border-radius: 20px;
-
       background: var(--bg);
-
       border: 1.5px solid transparent;
-
       font-size: 12px;
-
       font-weight: 600;
-
       color: var(--text-primary);
-
       cursor: pointer;
-
       transition: all 0.15s ease;
-
     }
 
     .cat-pill.active {
-
       border-color: var(--accent);
-
       background: rgba(0, 122, 255, 0.12);
-
     }
 
     .cat-dot {
-
       width: 8px;
-
       height: 8px;
-
       border-radius: 50%;
-
     }
 
     /* Quick Expense Form */
-
     .amount-input-wrap {
-
       display: flex;
-
       align-items: center;
-
       background: var(--bg);
-
       border-radius: var(--radius-md);
-
       padding: 10px 14px;
-
       margin-bottom: 10px;
-
     }
 
     .currency-prefix {
-
       font-size: 24px;
-
       font-weight: 700;
-
       color: var(--text-secondary);
-
       margin-right: 6px;
-
     }
 
     .amount-input {
-
       width: 100%;
-
       border: none;
-
       background: transparent;
-
       font-size: 26px;
-
       font-weight: 700;
-
       color: var(--text-primary);
-
       outline: none;
-
     }
 
     .quick-chips {
-
       display: flex;
-
       gap: 8px;
-
       margin-bottom: 12px;
-
     }
 
     .chip-btn {
-
       background: var(--bg);
-
       border: 1px solid var(--separator);
-
       color: var(--text-primary);
-
       padding: 5px 12px;
-
       border-radius: 16px;
-
       font-size: 13px;
-
       font-weight: 600;
-
       cursor: pointer;
-
     }
 
     .chip-btn:active {
-
       background: var(--separator);
-
     }
 
     .cat-selector {
-
       display: grid;
-
       grid-template-columns: repeat(4, 1fr);
-
       gap: 8px;
-
       margin-bottom: 12px;
-
       max-height: 200px;
-
       overflow-y: auto;
-
     }
 
     .cat-option {
-
       display: flex;
-
       flex-direction: column;
-
       align-items: center;
-
       gap: 3px;
-
       padding: 7px 4px;
-
       border-radius: var(--radius-md);
-
       background: var(--bg);
-
       border: 2px solid transparent;
-
       cursor: pointer;
-
       font-size: 11px;
-
       font-weight: 600;
-
       color: var(--text-secondary);
-
     }
 
     .cat-option span.emoji {
-
       font-size: 18px;
-
     }
 
     .cat-option.selected {
-
       border-color: var(--accent);
-
       color: var(--text-primary);
-
       background: rgba(0, 122, 255, 0.1);
-
     }
 
     .form-row {
-
       display: flex;
-
       gap: 8px;
-
       margin-bottom: 12px;
-
     }
 
     .text-input {
-
       flex: 1;
-
+      width: 100%;
       background: var(--bg);
-
       border: none;
-
       border-radius: var(--radius-md);
-
       padding: 11px 12px;
-
       font-size: 14px;
-
       color: var(--text-primary);
-
       outline: none;
-
     }
 
     .date-input {
-
       width: 135px;
-
       background: var(--bg);
-
       border: none;
-
       border-radius: var(--radius-md);
-
       padding: 11px 10px;
-
       font-size: 13px;
-
       color: var(--text-primary);
-
       font-family: inherit;
-
       outline: none;
-
     }
 
     .add-btn {
-
       width: 100%;
-
       background: var(--accent);
-
       color: #FFFFFF;
-
       border: none;
-
       border-radius: var(--radius-md);
-
       padding: 13px;
-
       font-size: 16px;
-
       font-weight: 700;
-
       cursor: pointer;
-
       transition: opacity 0.15s ease;
-
     }
 
     .add-btn:active {
-
       opacity: 0.85;
-
     }
 
     /* Transactions List & Swipe to Delete */
-
     .tx-list {
-
       display: flex;
-
       flex-direction: column;
-
       gap: 10px;
-
     }
 
     .empty-state {
-
       text-align: center;
-
       padding: 28px 12px;
-
       color: var(--text-secondary);
-
       font-size: 14px;
-
     }
 
     .tx-item-wrapper {
-
       position: relative;
-
       border-radius: var(--radius-md);
-
       overflow: hidden;
-
       background: var(--danger);
-
     }
 
     .tx-delete-action {
-
       position: absolute;
-
       top: 0;
-
       right: 0;
-
       bottom: 0;
-
       width: 80px;
-
       background: var(--danger);
-
       color: #FFFFFF;
-
       display: flex;
-
       align-items: center;
-
       justify-content: center;
-
       font-size: 13px;
-
       font-weight: 700;
-
       cursor: pointer;
-
       z-index: 1;
-
     }
 
     .tx-content {
-
       position: relative;
-
       z-index: 2;
-
       background: var(--bg);
-
       padding: 12px 14px;
-
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
-
       transition: transform 0.2s ease;
-
       touch-action: pan-y;
-
       user-select: none;
-
     }
 
     .tx-left {
-
       display: flex;
-
       align-items: center;
-
       gap: 12px;
-
     }
 
     .tx-icon {
-
       width: 38px;
-
       height: 38px;
-
       border-radius: 10px;
-
       display: flex;
-
       align-items: center;
-
       justify-content: center;
-
       font-size: 19px;
-
       color: #fff;
-
       flex-shrink: 0;
-
     }
 
     .tx-info {
-
       display: flex;
-
       flex-direction: column;
-
       gap: 2px;
-
     }
 
     .tx-title {
-
       font-size: 15px;
-
       font-weight: 600;
-
     }
 
     .tx-meta {
-
       font-size: 12px;
-
       color: var(--text-secondary);
+    }
 
+    .user-badge {
+      display: inline-block;
+      background: rgba(0, 122, 255, 0.12);
+      color: var(--accent);
+      padding: 1px 6px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-left: 4px;
     }
 
     .tx-right {
-
       display: flex;
-
       align-items: center;
-
       gap: 10px;
-
     }
 
     .tx-amount {
-
       font-size: 16px;
-
       font-weight: 700;
-
     }
 
     /* Undo Toast */
-
     .toast {
-
       position: fixed;
-
       bottom: calc(env(safe-area-inset-bottom, 16px) + 16px);
-
       left: 50%;
-
       transform: translateX(-50%) translateY(100px);
-
       background: #2C2C2E;
-
       color: #FFFFFF;
-
       padding: 12px 18px;
-
       border-radius: 30px;
-
       display: flex;
-
       align-items: center;
-
       gap: 16px;
-
       font-size: 14px;
-
       font-weight: 500;
-
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-
       transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-
       z-index: 1000;
-
     }
 
     .toast.visible {
-
       transform: translateX(-50%) translateY(0);
-
     }
 
     .toast-undo-btn {
-
       background: none;
-
       border: none;
-
       color: #64D2FF;
-
       font-weight: 700;
-
       font-size: 14px;
-
       cursor: pointer;
-
     }
-</style>
+  </style>
 </head>
 <body>
-<div class="app-container">
-<!-- Top Navigation Bar -->
-<div class="top-bar">
-<div class="month-switcher">
-<button class="icon-btn" id="prevMonthBtn" aria-label="Previous Month">&#8249;</button>
-<div class="month-label" id="monthLabel">November 2026</div>
-<button class="icon-btn" id="nextMonthBtn" aria-label="Next Month">&#8250;</button>
-</div>
-<button class="currency-btn" id="currencyBtn">₹ INR</button>
-</div>
-<!-- Monthly Total Card -->
-<div class="card">
-<div class="summary-label">Total Spent This Month</div>
-<div class="total-amount" id="totalSpentDisplay">₹0.00</div>
-<div class="stats-row">
-<span id="dailyAvgDisplay">Daily Avg: ₹0.00</span>
-<span id="txCountDisplay">0 transactions</span>
-</div>
-<div class="budget-header">
-<span id="budgetStatusText">Budget: ₹0 / ₹20,000</span>
-<button class="edit-budget-btn" id="editBudgetBtn">Edit Budget</button>
-</div>
-<div class="progress-track">
-<div class="progress-fill" id="budgetProgressFill"></div>
-</div>
-</div>
-<!-- Quick Expense Entry Form (Moved Up) -->
-<div class="card">
-<div class="section-title"><span>Quick Add Expense</span></div>
-<form id="expenseForm">
-<div class="amount-input-wrap">
-<span class="currency-prefix" id="inputCurrencySymbol">₹</span>
-<input
 
+  <!-- Private Login Gate -->
+  <div id="authScreen">
+    <div class="card">
+      <div class="auth-title">🔒 Private Tracker</div>
+      <div class="auth-subtitle">Sign in with your authorized email to view & sync shared expenses</div>
+      <div class="auth-error" id="authError"></div>
+      <form id="loginForm" style="display: flex; flex-direction: column; gap: 12px;">
+        <input type="email" id="emailInput" class="text-input" placeholder="Email address" required />
+        <input type="password" id="passwordInput" class="text-input" placeholder="Password" required />
+        <button type="submit" class="add-btn" id="loginBtn">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Expense Tracker App (Hidden until logged in) -->
+  <div class="app-container" id="appContainer" style="display: none;">
+    <!-- Top Navigation Bar -->
+    <div class="top-bar">
+      <div class="month-switcher">
+        <button class="icon-btn" id="prevMonthBtn" aria-label="Previous Month">&#8249;</button>
+        <div class="month-label" id="monthLabel">November 2026</div>
+        <button class="icon-btn" id="nextMonthBtn" aria-label="Next Month">&#8250;</button>
+      </div>
+      <div class="top-actions">
+        <button class="currency-btn" id="currencyBtn">₹ INR</button>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <div class="sync-bar">
+      <span><span class="sync-dot" id="syncDot"></span><span id="syncStatusText">Live Cloud Sync</span></span>
+      <span id="loggedInUserText"></span>
+    </div>
+
+    <!-- Monthly Total Card -->
+    <div class="card">
+      <div class="summary-label">Total Spent This Month</div>
+      <div class="total-amount" id="totalSpentDisplay">₹0.00</div>
+      <div class="stats-row">
+        <span id="dailyAvgDisplay">Daily Avg: ₹0.00</span>
+        <span id="txCountDisplay">0 transactions</span>
+      </div>
+      <div class="budget-header">
+        <span id="budgetStatusText">Budget: ₹0 / ₹20,000</span>
+        <button class="edit-budget-btn" id="editBudgetBtn">Edit Budget</button>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="budgetProgressFill"></div>
+      </div>
+    </div>
+
+    <!-- Quick Expense Entry Form (Top Position) -->
+    <div class="card">
+      <div class="section-title"><span>Quick Add Expense</span></div>
+      <form id="expenseForm">
+        <div class="amount-input-wrap">
+          <span class="currency-prefix" id="inputCurrencySymbol">₹</span>
+          <input
             type="number"
-
             step="0.01"
-
             inputmode="decimal"
-
             class="amount-input"
-
             id="amountInput"
-
             placeholder="0.00"
-
             required
-
           />
-</div>
-<div class="quick-chips">
-<button type="button" class="chip-btn" data-add="5">+5</button>
-<button type="button" class="chip-btn" data-add="20">+20</button>
-<button type="button" class="chip-btn" data-add="100">+100</button>
-<button type="button" class="chip-btn" data-add="500">+500</button>
-</div>
-<div class="cat-selector" id="catSelector"></div>
-<div class="form-row">
-<input
+        </div>
 
+        <div class="quick-chips">
+          <button type="button" class="chip-btn" data-add="5">+5</button>
+          <button type="button" class="chip-btn" data-add="20">+20</button>
+          <button type="button" class="chip-btn" data-add="100">+100</button>
+          <button type="button" class="chip-btn" data-add="500">+500</button>
+        </div>
+
+        <div class="cat-selector" id="catSelector"></div>
+
+        <div class="form-row">
+          <input
             type="text"
-
             class="text-input"
-
             id="noteInput"
-
             placeholder="Note (e.g., Milk, Uber)"
-
             maxlength="40"
-
           />
-<input type="date" class="date-input" id="dateInput" required />
-</div>
-<button type="submit" class="add-btn">Add Expense</button>
-</form>
-</div>
-<!-- Apple Card-Style Category Breakdown (Moved Down) -->
-<div class="card">
-<div class="section-title">
-<span>Category Breakdown</span>
-<button class="clear-filter-btn" id="clearFilterBtn">Show All</button>
-</div>
-<div class="apple-bar" id="categoryBar"></div>
-<div class="category-pills" id="categoryPills"></div>
-</div>
-<!-- Transactions List -->
-<div class="card">
-<div class="section-title">
-<span id="txListHeading">Recent Transactions</span>
-<span style="font-size: 11px; color: var(--text-secondary); font-weight: 500;">Swipe left to delete</span>
-</div>
-<div class="tx-list" id="txList"></div>
-</div>
-</div>
-<!-- Undo Toast -->
-<div class="toast" id="undoToast">
-<span>Transaction deleted</span>
-<button class="toast-undo-btn" id="undoBtn">Undo</button>
-</div>
-<script>
+          <input type="date" class="date-input" id="dateInput" required />
+        </div>
 
-    // Complete Categories Configuration (Original + New Additions)
+        <button type="submit" class="add-btn">Add Expense</button>
+      </form>
+    </div>
 
+    <!-- Apple Card-Style Category Breakdown (Bottom Position) -->
+    <div class="card">
+      <div class="section-title">
+        <span>Category Breakdown</span>
+        <button class="clear-filter-btn" id="clearFilterBtn">Show All</button>
+      </div>
+      <div class="apple-bar" id="categoryBar"></div>
+      <div class="category-pills" id="categoryPills"></div>
+    </div>
+
+    <!-- Transactions List -->
+    <div class="card">
+      <div class="section-title">
+        <span id="txListHeading">Recent Transactions</span>
+        <span style="font-size: 11px; color: var(--text-secondary); font-weight: 500;">Swipe left to delete</span>
+      </div>
+      <div class="tx-list" id="txList"></div>
+    </div>
+  </div>
+
+  <!-- Undo Toast -->
+  <div class="toast" id="undoToast">
+    <span>Transaction deleted</span>
+    <button class="toast-undo-btn" id="undoBtn">Undo</button>
+  </div>
+
+  <!-- Firebase Compat SDKs (Works cleanly in a single local or hosted HTML file) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script>
+    // =========================================================================
+    // 1. PASTE YOUR FIREBASE CONFIG HERE (From Firebase Console -> Project Settings)
+    // =========================================================================
+    const firebaseConfig = {
+      apiKey: "PASTE_YOUR_API_KEY_HERE",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    const trackerRef = db.ref('shared_tracker');
+
+    // Categories Configuration (Original + New Additions)
     const CATEGORIES = [
-
       { id: 'Food', emoji: '🍔', color: 'var(--cat-food)' },
-
       { id: 'Transport', emoji: '🚕', color: 'var(--cat-transport)' },
-
       { id: 'Groceries', emoji: '🛒', color: 'var(--cat-groceries)' },
-
       { id: 'Bills', emoji: '⚡', color: 'var(--cat-bills)' },
-
       { id: 'Fun', emoji: '🎉', color: 'var(--cat-fun)' },
-
       { id: 'Dairy', emoji: '🥛', color: 'var(--cat-dairy)' },
-
       { id: 'Shopping', emoji: '🛍️', color: 'var(--cat-shopping)' },
-
       { id: 'Veggie&Fruits', emoji: '🥦', color: 'var(--cat-veggie)' },
-
       { id: 'Dry Fruits', emoji: '🥜', color: 'var(--cat-dryfruits)' },
-
       { id: 'Rent', emoji: '🏠', color: 'var(--cat-rent)' },
-
       { id: 'Maintenance', emoji: '🔧', color: 'var(--cat-maintenance)' },
-
       { id: 'Misc', emoji: '📦', color: 'var(--cat-misc)' }
-
     ];
 
     const CURRENCIES = [
-
       { symbol: '₹', label: '₹ INR' },
-
       { symbol: '$', label: '$ USD' },
-
       { symbol: '€', label: '€ EUR' },
-
       { symbol: '£', label: '£ GBP' },
-
       { symbol: '¥', label: '¥ JPY' }
-
     ];
 
-    // State Initialization
-
-    let expenses = JSON.parse(localStorage.getItem('ios_expenses_v1')) || [];
-
-    let monthlyBudget = parseFloat(localStorage.getItem('ios_budget_v1')) || 20000;
-
-    let currencyIdx = parseInt(localStorage.getItem('ios_currency_v1'), 10) || 0;
+    // App State
+    let expenses = [];
+    let monthlyBudget = 20000;
+    let currencyIdx = 0;
+    let currentUserEmail = '';
 
     const now = new Date();
-
     let currentYear = now.getFullYear();
-
-    let currentMonth = now.getMonth(); // 0-indexed
-
+    let currentMonth = now.getMonth();
     let selectedCategory = 'Food';
-
     let activeFilterCategory = null;
-
     let lastDeletedTx = null;
-
     let undoTimeout = null;
 
     // DOM References
+    const authScreen = document.getElementById('authScreen');
+    const appContainer = document.getElementById('appContainer');
+    const loginForm = document.getElementById('loginForm');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const authError = document.getElementById('authError');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loggedInUserText = document.getElementById('loggedInUserText');
+    const syncStatusText = document.getElementById('syncStatusText');
 
     const monthLabel = document.getElementById('monthLabel');
-
     const prevMonthBtn = document.getElementById('prevMonthBtn');
-
     const nextMonthBtn = document.getElementById('nextMonthBtn');
-
     const currencyBtn = document.getElementById('currencyBtn');
-
     const inputCurrencySymbol = document.getElementById('inputCurrencySymbol');
-
     const totalSpentDisplay = document.getElementById('totalSpentDisplay');
-
     const dailyAvgDisplay = document.getElementById('dailyAvgDisplay');
-
     const txCountDisplay = document.getElementById('txCountDisplay');
-
     const budgetStatusText = document.getElementById('budgetStatusText');
-
     const editBudgetBtn = document.getElementById('editBudgetBtn');
-
     const budgetProgressFill = document.getElementById('budgetProgressFill');
-
     const categoryBar = document.getElementById('categoryBar');
-
     const categoryPills = document.getElementById('categoryPills');
-
     const clearFilterBtn = document.getElementById('clearFilterBtn');
-
     const catSelector = document.getElementById('catSelector');
-
     const expenseForm = document.getElementById('expenseForm');
-
     const amountInput = document.getElementById('amountInput');
-
     const noteInput = document.getElementById('noteInput');
-
     const dateInput = document.getElementById('dateInput');
-
     const txList = document.getElementById('txList');
-
     const txListHeading = document.getElementById('txListHeading');
-
     const undoToast = document.getElementById('undoToast');
-
     const undoBtn = document.getElementById('undoBtn');
-
-    // Set default date to today
 
     dateInput.value = new Date().toISOString().split('T')[0];
 
+    // =========================================================================
+    // 2. AUTHENTICATION & REALTIME CLOUD SYNC
+    // =========================================================================
+    loginForm.addEventListener('submit', e => {
+      e.preventDefault();
+      authError.style.display = 'none';
+      const email = emailInput.value.trim();
+      const pass = passwordInput.value;
+
+      auth.signInWithEmailAndPassword(email, pass).catch(err => {
+        authError.textContent = 'Access denied: Invalid email or password.';
+        authError.style.display = 'block';
+      });
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      auth.signOut();
+    });
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUserEmail = user.email;
+        const shortName = user.email.split('@')[0];
+        loggedInUserText.textContent = '👤 ' + shortName;
+        authScreen.style.display = 'none';
+        appContainer.style.display = 'flex';
+        startRealtimeListeners();
+      } else {
+        currentUserEmail = '';
+        trackerRef.off();
+        appContainer.style.display = 'none';
+        authScreen.style.display = 'flex';
+      }
+    });
+
+    function startRealtimeListeners() {
+      syncStatusText.textContent = 'Syncing...';
+      trackerRef.on('value', snapshot => {
+        const data = snapshot.val() || {};
+        monthlyBudget = data.budget || 20000;
+        currencyIdx = typeof data.currencyIdx === 'number' ? data.currencyIdx : 0;
+
+        const rawExpenses = data.expenses || {};
+        expenses = Object.keys(rawExpenses).map(key => ({
+          id: key,
+          ...rawExpenses[key]
+        }));
+
+        syncStatusText.textContent = 'Live Cloud Sync';
+        renderApp();
+      }, err => {
+        syncStatusText.textContent = 'Permission Denied (Check Rules)';
+      });
+    }
+
     function getSymbol() {
-
       return CURRENCIES[currencyIdx].symbol;
-
     }
 
     function formatMoney(num) {
-
       return getSymbol() + Number(num).toLocaleString(undefined, {
-
         minimumFractionDigits: 2,
-
         maximumFractionDigits: 2
-
       });
-
-    }
-
-    function saveData() {
-
-      localStorage.setItem('ios_expenses_v1', JSON.stringify(expenses));
-
-      localStorage.setItem('ios_budget_v1', String(monthlyBudget));
-
-      localStorage.setItem('ios_currency_v1', String(currencyIdx));
-
     }
 
     // Render Category Selector in Form
-
     function renderCategorySelector() {
-
       catSelector.innerHTML = '';
-
       CATEGORIES.forEach(cat => {
-
         const btn = document.createElement('button');
-
         btn.type = 'button';
-
         btn.className = 'cat-option' + (cat.id === selectedCategory ? ' selected' : '');
-
         btn.innerHTML = `<span class="emoji">${cat.emoji}</span><span>${cat.id}</span>`;
-
         btn.addEventListener('click', () => {
-
           selectedCategory = cat.id;
-
           renderCategorySelector();
-
         });
-
         catSelector.appendChild(btn);
-
       });
-
     }
-
-    // Filter expenses by currently viewed month & year
 
     function getMonthExpenses() {
-
       return expenses.filter(tx => {
-
         const d = new Date(tx.date + 'T00:00:00');
-
         return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
-
       });
-
     }
 
-    // Render Everything
-
     function renderApp() {
-
       const sym = getSymbol();
-
       currencyBtn.textContent = CURRENCIES[currencyIdx].label;
-
       inputCurrencySymbol.textContent = sym;
 
       const monthDate = new Date(currentYear, currentMonth, 1);
-
       monthLabel.textContent = monthDate.toLocaleString('default', { month: 'long', year: 'numeric' });
 
       const monthTx = getMonthExpenses();
-
-      const totalSpent = monthTx.reduce((sum, tx) => sum + tx.amount, 0);
-
-      // Days elapsed in viewed month for daily average
+      const totalSpent = monthTx.reduce((sum, tx) => sum + Number(tx.amount), 0);
 
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
       const isCurrentMonth = (currentYear === now.getFullYear() && currentMonth === now.getMonth());
-
       const daysCount = isCurrentMonth ? Math.max(1, now.getDate()) : daysInMonth;
-
       const dailyAvg = totalSpent / daysCount;
 
       totalSpentDisplay.textContent = formatMoney(totalSpent);
-
       dailyAvgDisplay.textContent = `Daily Avg: ${formatMoney(dailyAvg)}`;
-
       txCountDisplay.textContent = `${monthTx.length} transaction${monthTx.length === 1 ? '' : 's'}`;
 
-      // Budget bar
-
       budgetStatusText.textContent = `Budget: ${formatMoney(totalSpent)} / ${formatMoney(monthlyBudget)}`;
-
       const pct = monthlyBudget > 0 ? Math.min(100, (totalSpent / monthlyBudget) * 100) : 0;
-
       budgetProgressFill.style.width = `${pct}%`;
-
       if (pct >= 100) {
-
         budgetProgressFill.style.backgroundColor = 'var(--danger)';
-
       } else if (pct >= 80) {
-
         budgetProgressFill.style.backgroundColor = 'var(--cat-food)';
-
       } else {
-
         budgetProgressFill.style.backgroundColor = 'var(--success)';
-
       }
 
-      // Apple Card Category Breakdown Bar & Pills
-
       categoryBar.innerHTML = '';
-
       categoryPills.innerHTML = '';
 
       CATEGORIES.forEach(cat => {
-
         const catSum = monthTx
-
           .filter(t => t.category === cat.id)
-
-          .reduce((s, t) => s + t.amount, 0);
-
+          .reduce((s, t) => s + Number(t.amount), 0);
         const sharePct = totalSpent > 0 ? (catSum / totalSpent) * 100 : 0;
 
         if (sharePct > 0) {
-
           const seg = document.createElement('div');
-
           seg.className = 'bar-segment';
-
           seg.style.width = `${sharePct}%`;
-
           seg.style.backgroundColor = cat.color;
-
           categoryBar.appendChild(seg);
-
         }
 
         const pill = document.createElement('button');
-
         pill.type = 'button';
-
         pill.className = 'cat-pill' + (activeFilterCategory === cat.id ? ' active' : '');
-
         pill.innerHTML = `
-<span class="cat-dot" style="background:${cat.color}"></span>
-<span>${cat.emoji} ${cat.id}</span>
-<span style="color:var(--text-secondary)">${sym}${catSum.toFixed(0)}</span>
-
+          <span class="cat-dot" style="background:${cat.color}"></span>
+          <span>${cat.emoji} ${cat.id}</span>
+          <span style="color:var(--text-secondary)">${sym}${catSum.toFixed(0)}</span>
         `;
-
         pill.addEventListener('click', () => {
-
           activeFilterCategory = (activeFilterCategory === cat.id) ? null : cat.id;
-
           renderApp();
-
         });
-
         categoryPills.appendChild(pill);
-
       });
 
       clearFilterBtn.style.display = activeFilterCategory ? 'inline-block' : 'none';
-
       txListHeading.textContent = activeFilterCategory
-
         ? `${activeFilterCategory} Transactions`
-
         : 'Recent Transactions';
 
-      // Render Filtered Transactions List
-
       const visibleTx = activeFilterCategory
-
         ? monthTx.filter(t => t.category === activeFilterCategory)
-
         : monthTx;
 
       visibleTx.sort((a, b) => new Date(b.date) - new Date(a.date) || b.createdAt - a.createdAt);
 
       txList.innerHTML = '';
-
       if (visibleTx.length === 0) {
-
         txList.innerHTML = `<div class="empty-state">No expenses recorded for this selection.</div>`;
-
         return;
-
       }
 
       visibleTx.forEach(tx => {
-
         const catObj = CATEGORIES.find(c => c.id === tx.category) || CATEGORIES[0];
-
         const wrapper = document.createElement('div');
-
         wrapper.className = 'tx-item-wrapper';
 
-        wrapper.innerHTML = `
-<div class="tx-delete-action">Delete</div>
-<div class="tx-content">
-<div class="tx-left">
-<div class="tx-icon" style="background:${catObj.color}">${catObj.emoji}</div>
-<div class="tx-info">
-<div class="tx-title">${escapeHtml(tx.note || tx.category)}</div>
-<div class="tx-meta">${tx.category} • ${tx.date}</div>
-</div>
-</div>
-<div class="tx-right">
-<div class="tx-amount">-${formatMoney(tx.amount)}</div>
-</div>
-</div>
+        const addedByTag = tx.addedBy ? `<span class="user-badge">${escapeHtml(tx.addedBy)}</span>` : '';
 
+        wrapper.innerHTML = `
+          <div class="tx-delete-action">Delete</div>
+          <div class="tx-content">
+            <div class="tx-left">
+              <div class="tx-icon" style="background:${catObj.color}">${catObj.emoji}</div>
+              <div class="tx-info">
+                <div class="tx-title">${escapeHtml(tx.note || tx.category)} ${addedByTag}</div>
+                <div class="tx-meta">${tx.category} • ${tx.date}</div>
+              </div>
+            </div>
+            <div class="tx-right">
+              <div class="tx-amount">-${formatMoney(tx.amount)}</div>
+            </div>
+          </div>
         `;
 
         const contentEl = wrapper.querySelector('.tx-content');
-
         const deleteBtn = wrapper.querySelector('.tx-delete-action');
 
         attachSwipeToDelete(contentEl, () => deleteTransaction(tx.id));
-
         deleteBtn.addEventListener('click', () => deleteTransaction(tx.id));
 
         txList.appendChild(wrapper);
-
       });
-
     }
 
-    // Touch & Pointer Swipe-to-Delete Handler
-
     function attachSwipeToDelete(el, onDelete) {
-
       let startX = 0;
-
       let currentX = 0;
-
       let dragging = false;
 
       el.addEventListener('touchstart', e => {
-
         startX = e.touches[0].clientX;
-
         dragging = true;
-
         el.style.transition = 'none';
-
       }, { passive: true });
 
       el.addEventListener('touchmove', e => {
-
         if (!dragging) return;
-
         currentX = e.touches[0].clientX - startX;
-
         if (currentX < 0) {
-
           el.style.transform = `translateX(${Math.max(currentX, -140)}px)`;
-
         }
-
       }, { passive: true });
 
       el.addEventListener('touchend', () => {
-
         if (!dragging) return;
-
         dragging = false;
-
         el.style.transition = 'transform 0.2s ease';
 
         if (currentX < -115) {
-
           el.style.transform = 'translateX(-100%)';
-
           setTimeout(onDelete, 180);
-
         } else if (currentX < -45) {
-
           el.style.transform = 'translateX(-80px)';
-
         } else {
-
           el.style.transform = 'translateX(0)';
-
         }
-
         currentX = 0;
-
       });
-
     }
 
+    // Cloud Delete & Undo
     function deleteTransaction(id) {
-
-      const idx = expenses.findIndex(t => t.id === id);
-
-      if (idx === -1) return;
-
-      lastDeletedTx = expenses[idx];
-
-      expenses.splice(idx, 1);
-
-      saveData();
-
-      renderApp();
-
+      const target = expenses.find(t => t.id === id);
+      if (!target) return;
+      lastDeletedTx = { ...target };
+      trackerRef.child('expenses').child(id).remove();
       showUndoToast();
-
     }
 
     function showUndoToast() {
-
       undoToast.classList.add('visible');
-
       clearTimeout(undoTimeout);
-
       undoTimeout = setTimeout(() => {
-
         undoToast.classList.remove('visible');
-
         lastDeletedTx = null;
-
       }, 4500);
-
     }
 
     undoBtn.addEventListener('click', () => {
-
       if (lastDeletedTx) {
-
-        expenses.push(lastDeletedTx);
-
+        const { id, ...txData } = lastDeletedTx;
+        trackerRef.child('expenses').child(id).set(txData);
         lastDeletedTx = null;
-
-        saveData();
-
-        renderApp();
-
       }
-
       undoToast.classList.remove('visible');
-
     });
 
     function escapeHtml(str) {
-
-      return str.replace(/[&<>"']/g, m => ({
-
+      return String(str).replace(/[&<>"']/g, m => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-
       }[m]));
-
     }
 
-    // Event Listeners
-
+    // Cloud Add Expense
     expenseForm.addEventListener('submit', e => {
-
       e.preventDefault();
-
       const val = parseFloat(amountInput.value);
-
       if (isNaN(val) || val <= 0) return;
 
+      const shortUser = currentUserEmail ? currentUserEmail.split('@')[0] : 'User';
+      const chosenDate = dateInput.value || new Date().toISOString().split('T')[0];
+
       const newTx = {
-
-        id: 'tx_' + Date.now(),
-
         amount: val,
-
         category: selectedCategory,
-
         note: noteInput.value.trim(),
-
-        date: dateInput.value || new Date().toISOString().split('T')[0],
-
+        date: chosenDate,
+        addedBy: shortUser,
         createdAt: Date.now()
-
       };
 
-      expenses.push(newTx);
+      // Push directly to Firebase Realtime Database
+      trackerRef.child('expenses').push(newTx);
 
-      saveData();
-
-      // Jump view to the month of the added expense
-
-      const addedDate = new Date(newTx.date + 'T00:00:00');
-
+      const addedDate = new Date(chosenDate + 'T00:00:00');
       currentYear = addedDate.getFullYear();
-
       currentMonth = addedDate.getMonth();
 
       amountInput.value = '';
-
       noteInput.value = '';
-
-      renderApp();
-
     });
 
     document.querySelectorAll('.chip-btn').forEach(btn => {
-
       btn.addEventListener('click', () => {
-
         const addVal = parseFloat(btn.dataset.add);
-
         const cur = parseFloat(amountInput.value) || 0;
-
         amountInput.value = (cur + addVal).toFixed(2);
-
       });
-
     });
 
     prevMonthBtn.addEventListener('click', () => {
-
       currentMonth--;
-
       if (currentMonth < 0) {
-
         currentMonth = 11;
-
         currentYear--;
-
       }
-
       renderApp();
-
     });
 
     nextMonthBtn.addEventListener('click', () => {
-
       currentMonth++;
-
       if (currentMonth > 11) {
-
         currentMonth = 0;
-
         currentYear++;
-
       }
-
       renderApp();
-
     });
 
     currencyBtn.addEventListener('click', () => {
-
-      currencyIdx = (currencyIdx + 1) % CURRENCIES.length;
-
-      saveData();
-
-      renderApp();
-
+      const nextIdx = (currencyIdx + 1) % CURRENCIES.length;
+      trackerRef.child('currencyIdx').set(nextIdx);
     });
 
     editBudgetBtn.addEventListener('click', () => {
-
-      const input = prompt('Enter your monthly budget:', monthlyBudget);
-
+      const input = prompt('Enter your shared monthly budget:', monthlyBudget);
       if (input !== null) {
-
         const parsed = parseFloat(input);
-
         if (!isNaN(parsed) && parsed > 0) {
-
-          monthlyBudget = parsed;
-
-          saveData();
-
-          renderApp();
-
+          trackerRef.child('budget').set(parsed);
         }
-
       }
-
     });
 
     clearFilterBtn.addEventListener('click', () => {
-
       activeFilterCategory = null;
-
       renderApp();
-
     });
 
     // Initial Boot
-
     renderCategorySelector();
-
-    renderApp();
-</script>
+  </script>
 </body>
 </html>
- 
