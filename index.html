@@ -17,11 +17,19 @@
      --accent: #007AFF;
      --danger: #FF3B30;
      --success: #34C759;
+     /* Original & New Categories Colors */
      --cat-food: #FF9500;
      --cat-transport: #007AFF;
      --cat-groceries: #34C759;
      --cat-bills: #AF52DE;
      --cat-fun: #FF2D55;
+     --cat-dairy: #00C7BE;
+     --cat-shopping: #FF375F;
+     --cat-veggie: #28CD41;
+     --cat-dryfruits: #A2845E;
+     --cat-rent: #5856D6;
+     --cat-maintenance: #FFcc00;
+     --cat-misc: #8E8E93;
      --radius-lg: 18px;
      --radius-md: 12px;
      --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -266,16 +274,18 @@
    }
    .cat-selector {
      display: grid;
-     grid-template-columns: repeat(5, 1fr);
+     grid-template-columns: repeat(4, 1fr);
      gap: 8px;
      margin-bottom: 12px;
+     max-height: 200px;
+     overflow-y: auto;
    }
    .cat-option {
      display: flex;
      flex-direction: column;
      align-items: center;
-     gap: 4px;
-     padding: 8px 4px;
+     gap: 3px;
+     padding: 7px 4px;
      border-radius: var(--radius-md);
      background: var(--bg);
      border: 2px solid transparent;
@@ -285,7 +295,7 @@
      color: var(--text-secondary);
    }
    .cat-option span.emoji {
-     font-size: 20px;
+     font-size: 18px;
    }
    .cat-option.selected {
      border-color: var(--accent);
@@ -513,7 +523,7 @@
            type="text"
            class="text-input"
            id="noteInput"
-           placeholder="Note (e.g., Coffee, Uber)"
+           placeholder="Note (e.g., Milk, Uber)"
            maxlength="40"
          />
 <input type="date" class="date-input" id="dateInput" required />
@@ -536,13 +546,20 @@
 <button class="toast-undo-btn" id="undoBtn">Undo</button>
 </div>
 <script>
-   // Categories Configuration
+   // Complete Categories Configuration (Original + New Additions)
    const CATEGORIES = [
      { id: 'Food', emoji: '🍔', color: 'var(--cat-food)' },
      { id: 'Transport', emoji: '🚕', color: 'var(--cat-transport)' },
      { id: 'Groceries', emoji: '🛒', color: 'var(--cat-groceries)' },
      { id: 'Bills', emoji: '⚡', color: 'var(--cat-bills)' },
-     { id: 'Fun', emoji: '🎉', color: 'var(--cat-fun)' }
+     { id: 'Fun', emoji: '🎉', color: 'var(--cat-fun)' },
+     { id: 'Dairy', emoji: '🥛', color: 'var(--cat-dairy)' },
+     { id: 'Shopping', emoji: '🛍️', color: 'var(--cat-shopping)' },
+     { id: 'Veggie&Fruits', emoji: '🥦', color: 'var(--cat-veggie)' },
+     { id: 'Dry Fruits', emoji: '🥜', color: 'var(--cat-dryfruits)' },
+     { id: 'Rent', emoji: '🏠', color: 'var(--cat-rent)' },
+     { id: 'Maintenance', emoji: '🔧', color: 'var(--cat-maintenance)' },
+     { id: 'Misc', emoji: '📦', color: 'var(--cat-misc)' }
    ];
    const CURRENCIES = [
      { symbol: '₹', label: '₹ INR' },
