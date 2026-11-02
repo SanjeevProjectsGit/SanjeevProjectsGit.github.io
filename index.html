@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Expenses" />
-  <title>iPhone Expense Tracker</title>
+  <title>Expense Tracker</title>
 
   <style>
     :root {
@@ -1123,6 +1123,7 @@ const firebaseConfig = {
 
       amountInput.value = '';
       noteInput.value = '';
+      renderApp();
     });
 
     document.querySelectorAll('.chip-btn').forEach(btn => {
