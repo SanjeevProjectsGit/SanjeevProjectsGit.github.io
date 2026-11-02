@@ -830,8 +830,10 @@
       const email = emailInput.value.trim();
       const pass = passwordInput.value;
 
+      // Replace the existing .catch(...) inside loginForm.addEventListener with this:
       auth.signInWithEmailAndPassword(email, pass).catch(err => {
-        authError.textContent = 'Access denied: Invalid email or password.';
+        console.error(err);
+        authError.textContent = err.code + ': ' + err.message;
         authError.style.display = 'block';
       });
     });
