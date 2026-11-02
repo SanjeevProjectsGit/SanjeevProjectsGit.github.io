@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="WalletTrack" />
+  <title>iPhone Expense Tracker</title>
+  <style>
+    :root {
+      --bg: #F2F2F7;
+      --card: #FFFFFF;
+      --card-subtle: #F8F8FA;
+      --text-primary: #1C1C1E;
+      --text-secondary: #8E8E93;
+      --text-muted: #AEAEB2;
+      --separator: #E5E5EA;
+      --accent: #007AFF;
+      --accent-soft: rgba(0, 122, 255, 0.14);
+      --danger: #FF3B30;
+      --danger-soft: rgba(255, 59, 48, 0.14);
+      --success: #34C759;
+      --warning: #FF9500;
+
+      --cat-food: #FF9500;
+      --cat-transport: #007AFF;
+      --cat-groceries: #34C759;
+      --cat-bills: #AF52DE;
+      --cat-fun: #FF2D55;
+      --cat-coffee: #A2845E;
+      --cat-health: #5856D6;
+      --cat-shopping: #FF375F;
+
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.07);
+    }
+
+    [data-theme="dark"] {
+      --bg: #000000;
+      --card: #1C1C1E;
+      --card-subtle: #2C2C2E;
+      --text-primary: #FFFFFF;
+      --text-secondary: #98989D;
+      --text-muted: #636366;
+      --separator: #38383A;
+      --accent: #0A84FF;
+      --accent-soft: rgba(10, 132, 255, 0.22);
+      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button, input, select {
+      touch-action: manipulation;
+      font-family: inherit;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: env(safe-area-inset-top, 12px) 12px calc(env(safe-area-inset-bottom, 24px) + 90px);
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .iphone-shell {
+      width: 100%;
+      max-width: 430px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Top Header */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 4px 2px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #007AFF, #5856D6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pill-btn {
+      background: var(--card);
+      border: 1px solid var(--separator);
+      color: var(--text-primary);
+      padding: 8px 13px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.12s ease, background 0.15s ease;
+    }
+
+    .pill-btn:active {
+      transform: scale(0.92);
+      background: var(--accent-soft);
+    }
+
+    /* Month Switcher Bar */
+    .month-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border-radius: 99px;
+      padding: 6px 8px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--separator);
+    }
+
+    .nav-circle-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--card-subtle);
+      color: var(--text-primary);
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.12s ease, background 0.15s ease;
+    }
+
+    .nav-circle-btn:active {
+      transform: scale(0.88);
+      background: var(--accent-soft);
+    }
+
+    .month-display {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Card Base */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-xl);
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(128, 128, 128, 0.08);
+    }
+
+    /* Hero Wallet Summary Card */
+    .hero-card {
+      background: linear-gradient(145deg, #1C1C1E 0%, #2C2C34 100%);
+      color: #FFFFFF;
+      position: relative;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .hero-card {
+      background: linear-gradient(145deg, #1C1C1E 0%, #121214 100%);
+      border: 1px solid #38383A;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .hero-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(255, 255, 255, 0.65);
+      font-weight: 700;
+    }
+
+    .budget-chip {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+      padding: 6px 12px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+
+    .budget-chip:active {
+      transform: scale(0.93);
+    }
+
+    .hero-amount {
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      margin: 2px 0 14px;
+      line-height: 1.05;
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .metric-box {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 9px 10px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 2px;
+    }
+
+    .metric-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    .budget-bar-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .budget-track {
+      height: 9px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .budget-fill {
+      height: 100%;
+      width: 13%;
+      background: var(--success);
+      border-radius: 99px;
+      transition: width 0.35s ease, background-color 0.3s ease;
+    }
+
+    /* Section Headers */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .text-btn {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 4px 6px;
+    }
+
+    /* Apple Card Multi-Segment Bar & Category Grid */
+    .apple-segmented-bar {
+      height: 16px;
+      background: var(--card-subtle);
+      border-radius: 8px;
+      display: flex;
+      overflow: hidden;
+      gap: 3px;
+      padding: 2px;
+      margin-bottom: 14px;
+    }
+
+    .bar-seg {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.35s ease;
+      min-width: 6px;
+    }
+
+    .cat-breakdown-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .cat-stat-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      background: var(--card-subtle);
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
+      text-align: left;
+      width: 100%;
+    }
+
+    .cat-stat-pill:active {
+      transform: scale(0.96);
+    }
+
+    .cat-stat-pill.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .cat-pill-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .cat-badge-emoji {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      color: #fff;
+    }
+
+    .cat-pill-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .cat-pill-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cat-pill-pct {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .cat-pill-amt {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-left: 4px;
+    }
+
+    /* Quick Expense Form */
+    .editing-banner {
+      display: none;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .editing-banner.show {
+      display: flex;
+    }
+
+    .amount-box {
+      display: flex;
+      align-items: center;
+      background: var(--card-subtle);
+      border: 2px solid var(--separator);
+      border-radius: var(--radius-lg);
+      padding: 10px 16px;
+      margin-bottom: 10px;
+      transition: border-color 0.2s ease, transform 0.12s ease;
+    }
+
+    .amount-box:focus-within {
+      border-color: var(--accent);
+    }
+
+    .currency-sym {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-secondary);
+      margin-right: 6px;
+    }
+
+    .amount-field {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .quick-amount-row {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 14px;
+      scrollbar-width: none;
+    }
+
+    .quick-amount-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .amt-chip {
+      background: var(--card-subtle);
+      border: 1px solid var(--separator);
+      color: var(--text-primary);
+      padding: 7px 13px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.12s ease, background 0.15s ease;
+    }
+
+    .amt-chip:active {
+      transform: scale(0.92);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Emoji Category Picker Grid */
+    .picker-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .emoji-cat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .emoji-cat-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 10px 6px;
+      border-radius: var(--radius-md);
+      background: var(--card-subtle);
+      border: 2px solid transparent;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 700;
+      transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .emoji-cat-btn:active {
+      transform: scale(0.93);
+    }
+
+    .emoji-cat-btn .icon- {
+      font-size: 22px;
+      line-height: 1;
+      transition: transform 0.2s ease;
+    }
+
+    .emoji-cat-btn.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--text-primary);
+    }
+
+    .emoji-cat-btn.selected .icon- {
+      transform: scale(1.18);
+    }
+
+    /* Quick Note Tags */
+    .quick-note-tags {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-bottom: 10px;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+
+    .quick-note-tags::-webkit-scrollbar {
+      display: none;
+    }
+
+    .note-tag {
+      background: var(--card-subtle);
+      border: 1px dashed var(--separator);
+      color: var(--text-secondary);
+      padding: 6px 11px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .note-tag:active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      transform: scale(0.95);
+    }
+
+    .inputs-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .ios-input {
+      background: var(--card-subtle);
+      border: 1px solid var(--separator);
+      border-radius: var(--radius-md);
+      padding: 12px 13px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .ios-input:focus {
+      border-color: var(--accent);
+    }
+
+    .note-field {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .date-field {
+      width: 138px;
+      font-size: 13px;
+    }
+
+    .submit-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .primary-submit-btn {
+      flex: 1;
+      background: linear-gradient(135deg, #007AFF, #0055D4);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 122, 255, 0.35);
+      transition: transform 0.12s ease, opacity 0.15s ease;
+    }
+
+    .primary-submit-btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
+    .cancel-btn {
+      display: none;
+      background: var(--card-subtle);
+      color: var(--text-secondary);
+      border: 1px solid var(--separator);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Search & Filter Controls */
+    .filter-toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .search-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: var(--card-subtle);
+      border: 1px solid var(--separator);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      gap: 6px;
+    }
+
+    .search-box input {
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 13px;
+      width: 100%;
+      outline: none;
+    }
+
+    .sort-select {
+      background: var(--card-subtle);
+      border: 1px solid var(--separator);
+      color: var(--text-primary);
+      border-radius: var(--radius-md);
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Transactions List */
+    .tx-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .date-group-header {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 4px 2px 2px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .tx-swipe-container {
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--danger);
+    }
+
+    .tx-swipe-delete-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 85px;
+      background: var(--danger);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      z-index: 1;
+      border: none;
+    }
+
+    .tx-row {
+      position: relative;
+      z-index: 2;
+      background: var(--card-subtle);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .tx-row-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .tx-emoji-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .tx-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .tx-note-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tx-submeta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .tx-cat-tag {
+      padding: 1px 7px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(128, 128, 128, 0.12);
+    }
+
+    .tx-row-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .tx-price {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .tx-action-btns {
+      display: flex;
+      gap: 5px;
+    }
+
+    .mini-icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--separator);
+      background: var(--card);
+      color: var(--text-secondary);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mini-icon-btn:active {
+      transform: scale(0.88);
+    }
+
+    .empty-box {
+      text-align: center;
+      padding: 28px 16px;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .empty-box .big-emoji {
+      font-size: 36px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    /* Footer Actions */
+    .footer-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    /* Custom iOS Modal Dialog (Replaces native prompt/confirm which fail on mobile previews!) */
+    .ios-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 10000;
+    }
+
+    .ios-modal-backdrop.open {
+      display: flex;
+    }
+
+    .ios-modal-box {
+      background: var(--card);
+      color: var(--text-primary);
+      width: 100%;
+      max-width: 320px;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      text-align: center;
+      border: 1px solid var(--separator);
+    }
+
+    .ios-modal-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .ios-modal-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+
+    .ios-modal-input {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      border-radius: 12px;
+      border: 2px solid var(--accent);
+      background: var(--card-subtle);
+      color: var(--text-primary);
+      outline: none;
+      margin-bottom: 16px;
+    }
+
+    .ios-modal-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .ios-modal-btn {
+      flex: 1;
+      padding: 11px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+    }
+
+    .ios-modal-btn.secondary {
+      background: var(--card-subtle);
+      color: var(--text-secondary);
+    }
+
+    .ios-modal-btn.primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .ios-modal-btn.danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    /* Undo Toast */
+    .undo-toast {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom, 18px) + 18px);
+      left: 50%;
+      transform: translateX(-50%) translateY(130px);
+      background: #1C1C1E;
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: 99px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      transition: transform 0.25s ease;
+      z-index: 9999;
+    }
+
+    .undo-toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .undo-action {
+      background: none;
+      border: none;
+      color: #64D2FF;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="iphone-shell">
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="brand-title">
+        <div class="brand-badge">💳</div>
+        <span>WalletTrack</span>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="pill-btn" onclick="window.WT.cycleCurrency()">
+          <span id="currencyLabel">$ USD</span>
+        </button>
+        <button type="button" class="pill-btn" onclick="window.WT.toggleTheme()">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Month Navigation -->
+    <div class="month-bar">
+      <button type="button" class="nav-circle-btn" onclick="window.WT.changeMonth(-1)">‹</button>
+      <div class="month-display">
+        <span>📅</span>
+        <span id="currentMonthText">November 2026</span>
+      </div>
+      <button type="button" class="nav-circle-btn" onclick="window.WT.changeMonth(1)">›</button>
+    </div>
+
+    <!-- Hero Wallet Monthly Summary -->
+    <section class="card hero-card">
+      <div class="hero-top">
+        <span class="hero-label">Total Spent This Month</span>
+        <button type="button" class="budget-chip" onclick="window.WT.openBudgetModal()">🎯 Edit Budget</button>
+      </div>
+      <div class="hero-amount" id="heroTotalSpent">$255.00</div>
+
+      <div class="hero-metrics">
+        <div class="metric-box">
+          <div class="metric-label">Remaining</div>
+          <div class="metric-val" id="metricRemaining">$1,745.00</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Daily Avg</div>
+          <div class="metric-val" id="metricDailyAvg">$127.50</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Expenses</div>
+          <div class="metric-val" id="metricTxCount">6 items</div>
+        </div>
+      </div>
+
+      <div class="budget-bar-meta">
+        <span id="budgetProgressLabel">$255 of $2,000 budget</span>
+        <span id="budgetPercentLabel">13%</span>
+      </div>
+      <div class="budget-track">
+        <div class="budget-fill" id="budgetFillBar" style="width: 13%;"></div>
+      </div>
+    </section>
+
+    <!-- Apple Card Category Breakdown -->
+    <section class="card">
+      <div class="section-header">
+        <div class="section-title">📊 Category Breakdown</div>
+        <button type="button" class="text-btn" id="resetFilterBtn" style="display: none;" onclick="window.WT.filterCategory(null)">Show All ✕</button>
+      </div>
+
+      <div class="apple-segmented-bar" id="segmentedBar">
+        <div class="bar-seg" style="width: 33%; background: var(--cat-groceries);"></div>
+        <div class="bar-seg" style="width: 25%; background: var(--cat-bills);"></div>
+        <div class="bar-seg" style="width: 18%; background: var(--cat-food);"></div>
+        <div class="bar-seg" style="width: 12%; background: var(--cat-fun);"></div>
+        <div class="bar-seg" style="width: 12%; background: var(--cat-transport);"></div>
+      </div>
+
+      <div class="cat-breakdown-grid" id="categoryBreakdownGrid">
+        <button type="button" class="cat-stat-pill" onclick="window.WT.filterCategory('Food')">
+          <div class="cat-pill-left">
+            <div class="cat-badge-emoji" style="background: var(--cat-food);">🍔</div>
+            <div class="cat-pill-info">
+              <span class="cat-pill-name">Food & Dining</span>
+              <span class="cat-pill-pct">18% of spend</span>
+            </div>
+          </div>
+          <span class="cat-pill-amt">$45</span>
+        </button>
+
+        <button type="button" class="cat-stat-pill" onclick="window.WT.filterCategory('Transport')">
+          <div class="cat-pill-left">
+            <div class="cat-badge-emoji" style="background: var(--cat-transport);">🚕</div>
+            <div class="cat-pill-info">
+              <span class="cat-pill-name">Transport</span>
+              <span class="cat-pill-pct">10% of spend</span>
+            </div>
+          </div>
+          <span class="cat-pill-amt">$24.50</span>
+        </button>
+
+        <button type="button" class="cat-stat-pill" onclick="window.WT.filterCategory('Groceries')">
+          <div class="cat-pill-left">
+            <div class="cat-badge-emoji" style="background: var(--cat-groceries);">🛒</div>
+            <div class="cat-pill-info">
+              <span class="cat-pill-name">Groceries</span>
+              <span class="cat-pill-pct">33% of spend</span>
+            </div>
+          </div>
+          <span class="cat-pill-amt">$84</span>
+        </button>
+
+        <button type="button" class="cat-stat-pill" onclick="window.WT.filterCategory('Bills')">
+          <div class="cat-pill-left">
+            <div class="cat-badge-emoji" style="background: var(--cat-bills);">⚡</div>
+            <div class="cat-pill-info">
+              <span class="cat-pill-name">Bills & Wi-Fi</span>
+              <span class="cat-pill-pct">25% of spend</span>
+            </div>
+          </div>
+          <span class="cat-pill-amt">$65</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Quick Add / Edit Expense Form -->
+    <section class="card" id="expenseFormCard">
+      <div class="section-header">
+        <div class="section-title" id="formTitleText">➕ Quick Add Expense</div>
+      </div>
+
+      <div class="editing-banner" id="editingBanner">
+        <span>✏️ Editing selected transaction</span>
+        <button type="button" class="text-btn" onclick="window.WT.cancelEdit()">Cancel</button>
+      </div>
+
+      <form id="expenseForm" onsubmit="return window.WT.handleSubmit(event)">
+        <div class="amount-box" id="amountBoxWrap">
+          <span class="currency-sym" id="formCurrencySym">$</span>
+          <input
+            type="number"
+            step="0.01"
+            inputmode="decimal"
+            class="amount-field"
+            id="amountInput"
+            placeholder="0.00"
+            required
+          />
+        </div>
+
+        <!-- Quick Amount Chips -->
+        <div class="quick-amount-row">
+          <button type="button" class="amt-chip" data-step="5" onclick="window.WT.addQuickAmount(5)">+$5</button>
+          <button type="button" class="amt-chip" data-step="10" onclick="window.WT.addQuickAmount(10)">+$10</button>
+          <button type="button" class="amt-chip" data-step="25" onclick="window.WT.addQuickAmount(25)">+$25</button>
+          <button type="button" class="amt-chip" data-step="50" onclick="window.WT.addQuickAmount(50)">+$50</button>
+          <button type="button" class="amt-chip" data-step="100" onclick="window.WT.addQuickAmount(100)">+$100</button>
+          <button type="button" class="amt-chip" onclick="window.WT.clearAmount()">Clear</button>
+        </div>
+
+        <!-- Emoji Category Picker Buttons -->
+        <div class="picker-label">Choose Category</div>
+        <div class="emoji-cat-grid" id="emojiCatGrid">
+          <button type="button" class="emoji-cat-btn selected" data-cat="Food" onclick="window.WT.selectCategory('Food')">
+            <span class="icon-">🍔</span>
+            <span>Food</span>
+          </button>
+          <button type="button" class="emoji-cat-btn" data-cat="Transport" onclick="window.WT.selectCategory('Transport')">
+            <span class="icon-">🚕</span>
+            <span>Transport</span>
+          </button>
+          <button type="button" class="emoji-cat-btn" data-cat="Groceries" onclick="window.WT.selectCategory('Groceries')">
+            <span class="icon-">🛒</span>
+            <span>Groceries</span>
+          </button>
+          <button type="button" class="emoji-cat-btn" data-cat="Bills" onclick="window.WT.selectCategory('Bills')">
+            <span class="icon-">⚡</span>
+            <span>Bills</span>
+          </button>
+          <button type="button" class="emoji-cat-btn" data-cat="Fun" onclick="window.WT.selectCategory('Fun')">
+            <span class="icon-">🎉</span>
+            <span>Fun</span>
+          </button>
+          <button type="button" class="emoji-cat-btn" data-cat="Coffee" onclick="window.WT.selectCategory('Coffee')">
+            <span class="icon-">☕</span>
+            <span>Coffee</span>
+          </button>
+          <button type="button" class="emoji-cat-btn" data-cat="Health" onclick="window.WT.selectCategory('Health')">
+            <span class="icon-">💊</span>
+            <span>Health</span>
+          </button>
+          <button type="button" class="emoji-cat-btn" data-cat="Shopping" onclick="window.WT.selectCategory('Shopping')">
+            <span class="icon-">🛍️</span>
+            <span>Shopping</span>
+          </button>
+        </div>
+
+        <!-- Quick Note Suggestion Pills -->
+        <div class="picker-label">Quick Note Tags (Tap to auto-fill)</div>
+        <div class="quick-note-tags">
+          <button type="button" class="note-tag" onclick="window.WT.quickFill('Iced Latte ☕', 'Coffee', 6.50)">☕ Iced Latte</button>
+          <button type="button" class="note-tag" onclick="window.WT.quickFill('Lunch with team 🍔', 'Food', 18.00)">🍔 Lunch</button>
+          <button type="button" class="note-tag" onclick="window.WT.quickFill('Uber Ride 🚕', 'Transport', 15.00)">🚕 Uber Ride</button>
+          <button type="button" class="note-tag" onclick="window.WT.quickFill('Weekly Groceries 🛒', 'Groceries', 65.00)">🛒 Groceries</button>
+          <button type="button" class="note-tag" onclick="window.WT.quickFill('Internet & Wi-Fi ⚡', 'Bills', 55.00)">⚡ Wi-Fi Bill</button>
+          <button type="button" class="note-tag" onclick="window.WT.quickFill('Movie Night 🍿', 'Fun', 25.00)">🍿 Movie Night</button>
+        </div>
+
+        <div class="inputs-row">
+          <input
+            type="text"
+            class="ios-input note-field"
+            id="noteInput"
+            placeholder="What was this for? (e.g., Dinner, Uber)"
+            maxlength="45"
+          />
+          <input type="date" class="ios-input date-field" id="dateInput" required />
+        </div>
+
+        <div class="submit-row">
+          <button type="button" class="cancel-btn" id="cancelEditBtn" onclick="window.WT.cancelEdit()">Cancel</button>
+          <button type="submit" class="primary-submit-btn" id="submitExpenseBtn">＋ Add Expense</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Transactions List Section -->
+    <section class="card">
+      <div class="section-header">
+        <div class="section-title" id="txSectionTitle">🧾 Recent Expenses</div>
+        <span style="font-size: 11px; color: var(--text-secondary); font-weight: 600;">Tap ✏️ to edit • 🗑️ to delete</span>
+      </div>
+
+      <div class="filter-toolbar">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="searchInput" placeholder="Search notes or categories..." oninput="window.WT.render()" />
+        </div>
+        <select class="sort-select" id="sortSelect" onchange="window.WT.render()">
+          <option value="newest">Newest First</option>
+          <option value="highest">Highest Amount</option>
+          <option value="lowest">Lowest Amount</option>
+        </select>
+      </div>
+
+      <div class="tx-feed" id="txFeed"></div>
+    </section>
+
+    <!-- Footer Utility Buttons -->
+    <div class="footer-bar">
+      <button type="button" class="text-btn" onclick="window.WT.restoreSamples()">🔄 Restore Sample Data</button>
+      <span style="color: var(--separator);">|</span>
+      <button type="button" class="text-btn" style="color: var(--danger);" onclick="window.WT.openClearModal()">🗑️ Clear All Expenses</button>
+    </div>
+  </div>
+
+  <!-- Custom iOS Budget Modal -->
+  <div class="ios-modal-backdrop" id="budgetModal">
+    <div class="ios-modal-box">
+      <div class="ios-modal-title">🎯 Monthly Budget</div>
+      <div class="ios-modal-desc" id="budgetModalDesc">Set your target spending limit for the month</div>
+      <input type="number" step="1" inputmode="decimal" class="ios-modal-input" id="budgetModalInput" placeholder="2000" />
+      <div class="ios-modal-actions">
+        <button type="button" class="ios-modal-btn secondary" onclick="window.WT.closeBudgetModal()">Cancel</button>
+        <button type="button" class="ios-modal-btn primary" onclick="window.WT.saveBudgetModal()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom iOS Clear Confirmation Modal -->
+  <div class="ios-modal-backdrop" id="clearModal">
+    <div class="ios-modal-box">
+      <div class="ios-modal-title">🗑️ Clear All Expenses?</div>
+      <div class="ios-modal-desc">This will remove all transactions. You can restore sample data anytime.</div>
+      <div class="ios-modal-actions">
+        <button type="button" class="ios-modal-btn secondary" onclick="window.WT.closeClearModal()">Cancel</button>
+        <button type="button" class="ios-modal-btn danger" onclick="window.WT.confirmClearAll()">Clear All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Undo Toast -->
+  <div class="undo-toast" id="undoToast">
+    <span id="toastMsg">Expense saved</span>
+    <button type="button" class="undo-action" id="undoBtn" onclick="window.WT.undoDelete()">UNDO</button>
+  </div>
+
+  <script>
+    (function () {
+      // Safe Storage Wrapper: Never crashes when opened via file:// on Safari/iPhone!
+      // Falls back to window.name (which persists across reloads on file://) and memory.
+      var memoryStore = {};
+      try {
+        if (window.name && window.name.indexOf('WT_STORE:') === 0) {
+          memoryStore = JSON.parse(window.name.slice(9)) || {};
+        }
+      } catch (e) {
+        memoryStore = {};
+      }
+
+      function safeGet(key) {
+        try {
+          var val = window.localStorage.getItem(key);
+          if (val !== null) return val;
+        } catch (e) {}
+        return Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null;
+      }
+
+      function safeSet(key, val) {
+        var strVal = String(val);
+        memoryStore[key] = strVal;
+        try {
+          window.localStorage.setItem(key, strVal);
+        } catch (e) {}
+        try {
+          window.name = 'WT_STORE:' + JSON.stringify(memoryStore);
+        } catch (e) {}
+      }
+
+      var CATEGORIES = [
+        { id: 'Food', name: 'Food & Dining', emoji: '🍔', color: 'var(--cat-food)' },
+        { id: 'Transport', name: 'Transport', emoji: '🚕', color: 'var(--cat-transport)' },
+        { id: 'Groceries', name: 'Groceries', emoji: '🛒', color: 'var(--cat-groceries)' },
+        { id: 'Bills', name: 'Bills & Wi-Fi', emoji: '⚡', color: 'var(--cat-bills)' },
+        { id: 'Fun', name: 'Fun & Movies', emoji: '🎉', color: 'var(--cat-fun)' },
+        { id: 'Coffee', name: 'Coffee & Cafe', emoji: '☕', color: 'var(--cat-coffee)' },
+        { id: 'Health', name: 'Health & Gym', emoji: '💊', color: 'var(--cat-health)' },
+        { id: 'Shopping', name: 'Shopping', emoji: '🛍️', color: 'var(--cat-shopping)' }
+      ];
+
+      var CURRENCIES = [
+        { sym: '$', code: '$ USD', defaultBudget: 2000 },
+        { sym: '₹', code: '₹ INR', defaultBudget: 25000 },
+        { sym: '€', code: '€ EUR', defaultBudget: 1800 },
+        { sym: '£', code: '£ GBP', defaultBudget: 1600 },
+        { sym: '¥', code: '¥ JPY', defaultBudget: 200000 }
+      ];
+
+      var KEYS = {
+        EXPENSES: 'wt_expenses_v3',
+        BUDGET: 'wt_budget_v3',
+        CURRENCY: 'wt_currency_v3',
+        THEME: 'wt_theme_v3',
+        INIT: 'wt_init_v3'
+      };
+
+      var now = new Date();
+      var viewedYear = now.getFullYear();
+      var viewedMonth = now.getMonth();
+      var selectedCategory = 'Food';
+      var activeCategoryFilter = null;
+      var editingId = null;
+      var lastDeleted = null;
+      var toastTimer = null;
+
+      function getTodayISO(offsetDays) {
+        var d = new Date();
+        d.setDate(d.getDate() - (offsetDays || 0));
+        var yyyy = d.getFullYear();
+        var mm = String(d.getMonth() + 1).padStart(2, '0');
+        var dd = String(d.getDate()).padStart(2, '0');
+        return yyyy + '-' + mm + '-' + dd;
+      }
+
+      function createSampleExpenses() {
+        return [
+          { id: 'tx_1', amount: 84.00, category: 'Groceries', note: 'Weekly Market & Groceries', date: getTodayISO(0), createdAt: Date.now() - 10000 },
+          { id: 'tx_2', amount: 45.00, category: 'Food', note: 'Dinner & Woodfire Pizza', date: getTodayISO(0), createdAt: Date.now() - 20000 },
+          { id: 'tx_3', amount: 6.50, category: 'Coffee', note: 'Iced Oatmilk Latte', date: getTodayISO(1), createdAt: Date.now() - 30000 },
+          { id: 'tx_4', amount: 24.50, category: 'Transport', note: 'Uber Ride Downtown', date: getTodayISO(1), createdAt: Date.now() - 40000 },
+          { id: 'tx_5', amount: 65.00, category: 'Bills', note: 'High-Speed Fiber Internet', date: getTodayISO(2), createdAt: Date.now() - 50000 },
+          { id: 'tx_6', amount: 30.00, category: 'Fun', note: 'IMAX Cinema Tickets', date: getTodayISO(3), createdAt: Date.now() - 60000 }
+        ];
+      }
+
+      var currencyIdx = parseInt(safeGet(KEYS.CURRENCY), 10);
+      if (isNaN(currencyIdx) || currencyIdx < 0 || currencyIdx >= CURRENCIES.length) currencyIdx = 0;
+
+      var monthlyBudget = parseFloat(safeGet(KEYS.BUDGET));
+      if (isNaN(monthlyBudget) || monthlyBudget <= 0) monthlyBudget = CURRENCIES[currencyIdx].defaultBudget;
+
+      var expenses = [];
+      var rawSaved = safeGet(KEYS.EXPENSES);
+      var wasInit = safeGet(KEYS.INIT);
+
+      if (rawSaved !== null) {
+        try {
+          expenses = JSON.parse(rawSaved) || [];
+        } catch (e) {
+          expenses = createSampleExpenses();
+        }
+      } else if (!wasInit) {
+        expenses = createSampleExpenses();
+        safeSet(KEYS.INIT, 'true');
+        safeSet(KEYS.EXPENSES, JSON.stringify(expenses));
+      }
+
+      var currentTheme = safeGet(KEYS.THEME) || 'light';
+      document.documentElement.setAttribute('data-theme', currentTheme);
+
+      var dateInput = document.getElementById('dateInput');
+      if (dateInput) dateInput.value = getTodayISO(0);
+
+      function saveState() {
+        safeSet(KEYS.EXPENSES, JSON.stringify(expenses));
+        safeSet(KEYS.BUDGET, String(monthlyBudget));
+        safeSet(KEYS.CURRENCY, String(currencyIdx));
+        safeSet(KEYS.THEME, currentTheme);
+        safeSet(KEYS.INIT, 'true');
+      }
+
+      function sym() {
+        return CURRENCIES[currencyIdx].sym;
+      }
+
+      function fmt(val) {
+        var n = Number(val) || 0;
+        return sym() + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      }
+
+      function fmtShort(val) {
+        var n = Number(val) || 0;
+        var str = (n % 1 === 0) ? n.toFixed(0) : n.toFixed(2);
+        return sym() + str.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      }
+
+      function getCatMeta(catId) {
+        for (var i = 0; i < CATEGORIES.length; i++) {
+          if (CATEGORIES[i].id === catId) return CATEGORIES[i];
+        }
+        return CATEGORIES[0];
+      }
+
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, function (m) {
+          return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+        });
+      }
+
+      function showToast(msg, showUndo) {
+        var toast = document.getElementById('undoToast');
+        var msgEl = document.getElementById('toastMsg');
+        var undoBtn = document.getElementById('undoBtn');
+        if (!toast || !msgEl || !undoBtn) return;
+
+        msgEl.textContent = msg;
+        undoBtn.style.display = showUndo ? 'inline-block' : 'none';
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          toast.classList.remove('show');
+        }, 4200);
+      }
+
+      function updateCategoryPickerButtons() {
+        var btns = document.querySelectorAll('#emojiCatGrid .emoji-cat-btn');
+        for (var i = 0; i < btns.length; i++) {
+          var b = btns[i];
+          if (b.getAttribute('data-cat') === selectedCategory) {
+            b.classList.add('selected');
+          } else {
+            b.classList.remove('selected');
+          }
+        }
+      }
+
+      function formatFriendlyDate(isoDate) {
+        if (isoDate === getTodayISO(0)) return 'Today';
+        if (isoDate === getTodayISO(1)) return 'Yesterday';
+        var parts = isoDate.split('-');
+        if (parts.length !== 3) return isoDate;
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var m = parseInt(parts[1], 10) - 1;
+        return (months[m] || '') + ' ' + parseInt(parts[2], 10) + ', ' + parts[0];
+      }
+
+      function getViewedMonthExpenses() {
+        return expenses.filter(function (item) {
+          if (!item || !item.date) return false;
+          var parts = item.date.split('-');
+          var y = parseInt(parts[0], 10);
+          var m = parseInt(parts[1], 10) - 1;
+          return y === viewedYear && m === viewedMonth;
+        });
+      }
+
+      function render() {
+        var themeIcon = document.getElementById('themeIcon');
+        var currencyLabel = document.getElementById('currencyLabel');
+        var formCurrencySym = document.getElementById('formCurrencySym');
+        if (themeIcon) themeIcon.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        if (currencyLabel) currencyLabel.textContent = CURRENCIES[currencyIdx].code;
+        if (formCurrencySym) formCurrencySym.textContent = sym();
+
+        var chips = document.querySelectorAll('.amt-chip[data-step]');
+        for (var i = 0; i < chips.length; i++) {
+          chips[i].textContent = '+' + sym() + chips[i].getAttribute('data-step');
+        }
+
+        var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        var currentMonthText = document.getElementById('currentMonthText');
+        if (currentMonthText) {
+          currentMonthText.textContent = monthNames[viewedMonth] + ' ' + viewedYear;
+        }
+
+        var monthExpenses = getViewedMonthExpenses();
+        var totalSpent = 0;
+        for (var j = 0; j < monthExpenses.length; j++) {
+          totalSpent += Number(monthExpenses[j].amount) || 0;
+        }
+
+        var remaining = monthlyBudget - totalSpent;
+        var daysInMonth = new Date(viewedYear, viewedMonth + 1, 0).getDate();
+        var isCurr = (viewedYear === now.getFullYear() && viewedMonth === now.getMonth());
+        var elapsed = isCurr ? Math.max(1, now.getDate()) : daysInMonth;
+        var dailyAvg = totalSpent / elapsed;
+
+        document.getElementById('heroTotalSpent').textContent = fmt(totalSpent);
+        var remEl = document.getElementById('metricRemaining');
+        remEl.textContent = (remaining < 0 ? '-' : '') + fmtShort(Math.abs(remaining));
+        remEl.style.color = remaining < 0 ? '#FF6961' : '#FFFFFF';
+        document.getElementById('metricDailyAvg').textContent = fmtShort(dailyAvg);
+        document.getElementById('metricTxCount').textContent = monthExpenses.length + (monthExpenses.length === 1 ? ' item' : ' items');
+
+        var pct = monthlyBudget > 0 ? Math.round((totalSpent / monthlyBudget) * 100) : 0;
+        var clampedPct = Math.min(100, Math.max(0, pct));
+        document.getElementById('budgetProgressLabel').textContent = fmtShort(totalSpent) + ' of ' + fmtShort(monthlyBudget) + ' budget';
+        document.getElementById('budgetPercentLabel').textContent = pct + '%';
+
+        var fillBar = document.getElementById('budgetFillBar');
+        fillBar.style.width = clampedPct + '%';
+        if (pct >= 100) fillBar.style.backgroundColor = 'var(--danger)';
+        else if (pct >= 80) fillBar.style.backgroundColor = 'var(--warning)';
+        else fillBar.style.backgroundColor = 'var(--success)';
+
+        // Segmented Bar & Category Breakdown Grid
+        var segmentedBar = document.getElementById('segmentedBar');
+        var grid = document.getElementById('categoryBreakdownGrid');
+        segmentedBar.innerHTML = '';
+        grid.innerHTML = '';
+
+        for (var cIdx = 0; cIdx < CATEGORIES.length; cIdx++) {
+          var cat = CATEGORIES[cIdx];
+          var catSum = 0;
+          for (var k = 0; k < monthExpenses.length; k++) {
+            if (monthExpenses[k].category === cat.id) {
+              catSum += Number(monthExpenses[k].amount) || 0;
+            }
+          }
+          var share = totalSpent > 0 ? (catSum / totalSpent) * 100 : 0;
+
+          if (share > 0) {
+            var seg = document.createElement('div');
+            seg.className = 'bar-seg';
+            seg.style.width = share + '%';
+            seg.style.backgroundColor = cat.color;
+            segmentedBar.appendChild(seg);
+          }
+
+          var pill = document.createElement('button');
+          pill.type = 'button';
+          pill.className = 'cat-stat-pill' + (activeCategoryFilter === cat.id ? ' active' : '');
+          pill.setAttribute('onclick', "window.WT.filterCategory('" + cat.id + "')");
+          pill.innerHTML =
+            '<div class="cat-pill-left">' +
+              '<div class="cat-badge-emoji" style="background:' + cat.color + ';">' + cat.emoji + '</div>' +
+              '<div class="cat-pill-info">' +
+                '<span class="cat-pill-name">' + cat.name + '</span>' +
+                '<span class="cat-pill-pct">' + Math.round(share) + '% of spend</span>' +
+              '</div>' +
+            '</div>' +
+            '<span class="cat-pill-amt">' + fmtShort(catSum) + '</span>';
+          grid.appendChild(pill);
+        }
+
+        if (totalSpent === 0) {
+          var emptySeg = document.createElement('div');
+          emptySeg.className = 'bar-seg';
+          emptySeg.style.width = '100%';
+          emptySeg.style.backgroundColor = 'var(--separator)';
+          segmentedBar.appendChild(emptySeg);
+        }
+
+        var resetFilterBtn = document.getElementById('resetFilterBtn');
+        var txSectionTitle = document.getElementById('txSectionTitle');
+        if (activeCategoryFilter) {
+          resetFilterBtn.style.display = 'inline-block';
+          var m = getCatMeta(activeCategoryFilter);
+          txSectionTitle.textContent = m.emoji + ' ' + m.name + ' Expenses';
+        } else {
+          resetFilterBtn.style.display = 'none';
+          txSectionTitle.textContent = '🧾 Recent Expenses';
+        }
+
+        // Filter & Sort Transactions
+        var searchVal = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+        var sortMode = document.getElementById('sortSelect').value;
+
+        var filtered = monthExpenses.filter(function (tx) {
+          if (activeCategoryFilter && tx.category !== activeCategoryFilter) return false;
+          if (searchVal) {
+            var hay = ((tx.note || '') + ' ' + tx.category).toLowerCase();
+            return hay.indexOf(searchVal) !== -1;
+          }
+          return true;
+        });
+
+        filtered.sort(function (a, b) {
+          if (sortMode === 'highest') return b.amount - a.amount;
+          if (sortMode === 'lowest') return a.amount - b.amount;
+          if (b.date !== a.date) return b.date > a.date ? 1 : -1;
+          return (b.createdAt || 0) - (a.createdAt || 0);
+        });
+
+        var txFeed = document.getElementById('txFeed');
+        txFeed.innerHTML = '';
+
+        if (filtered.length === 0) {
+          txFeed.innerHTML =
+            '<div class="empty-box">' +
+              '<span class="big-emoji">✨</span>' +
+              '<strong>No expenses found</strong>' +
+              '<p style="margin-top:4px;font-size:12px;">Add an expense above or tap Restore Sample Data below.</p>' +
+            '</div>';
+          return;
+        }
+
+        var lastDateHeader = null;
+        for (var fIdx = 0; fIdx < filtered.length; fIdx++) {
+          var tx = filtered[fIdx];
+          if (sortMode === 'newest' && tx.date !== lastDateHeader) {
+            lastDateHeader = tx.date;
+            var dayTotal = 0;
+            for (var dIdx = 0; dIdx < filtered.length; dIdx++) {
+              if (filtered[dIdx].date === tx.date) dayTotal += Number(filtered[dIdx].amount) || 0;
+            }
+            var header = document.createElement('div');
+            header.className = 'date-group-header';
+            header.innerHTML = '<span>' + formatFriendlyDate(tx.date) + '</span><span>' + fmt(dayTotal) + '</span>';
+            txFeed.appendChild(header);
+          }
+
+          var meta = getCatMeta(tx.category);
+          var wrap = document.createElement('div');
+          wrap.className = 'tx-swipe-container';
+          wrap.innerHTML =
+            '<button type="button" class="tx-swipe-delete-bg" onclick="window.WT.deleteTx('' + tx.id + '')">Delete</button>' +
+            '<div class="tx-row">' +
+              '<div class="tx-row-left" onclick="window.WT.editTx('' + tx.id + '')">' +
+                '<div class="tx-emoji-avatar" style="background:' + meta.color + ';">' + meta.emoji + '</div>' +
+                '<div class="tx-details">' +
+                  '<div class="tx-note-title">' + escapeHtml(tx.note || meta.name) + '</div>' +
+                  '<div class="tx-submeta">' +
+                    '<span class="tx-cat-tag">' + meta.emoji + ' ' + meta.id + '</span>' +
+                    '<span>• ' + tx.date + '</span>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="tx-row-right">' +
+                '<span class="tx-price">-' + fmt(tx.amount) + '</span>' +
+                '<div class="tx-action-btns">' +
+                  '<button type="button" class="mini-icon-btn" onclick="window.WT.editTx('' + tx.id + '')" title="Edit">✏️</button>' +
+                  '<button type="button" class="mini-icon-btn" onclick="window.WT.deleteTx('' + tx.id + '')" title="Delete">🗑️</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+
+          txFeed.appendChild(wrap);
+        }
+      }
+
+      // Expose all interactive actions globally on window.WT so every button click works reliably
+      window.WT = {
+        render: render,
+
+        cycleCurrency: function () {
+          currencyIdx = (currencyIdx + 1) % CURRENCIES.length;
+          saveState();
+          render();
+          showToast('Currency switched to ' + CURRENCIES[currencyIdx].code, false);
+        },
+
+        toggleTheme: function () {
+          currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', currentTheme);
+          saveState();
+          render();
+          showToast(currentTheme === 'dark' ? 'Dark mode enabled 🌙' : 'Light mode enabled ☀️', false);
+        },
+
+        changeMonth: function (delta) {
+          viewedMonth += delta;
+          if (viewedMonth < 0) {
+            viewedMonth = 11;
+            viewedYear--;
+          } else if (viewedMonth > 11) {
+            viewedMonth = 0;
+            viewedYear++;
+          }
+          render();
+        },
+
+        selectCategory: function (catId) {
+          selectedCategory = catId;
+          updateCategoryPickerButtons();
+        },
+
+        filterCategory: function (catId) {
+          if (!catId || activeCategoryFilter === catId) {
+            activeCategoryFilter = null;
+          } else {
+            activeCategoryFilter = catId;
+          }
+          render();
+        },
+
+        addQuickAmount: function (step) {
+          var input = document.getElementById('amountInput');
+          var cur = parseFloat(input.value) || 0;
+          input.value = (cur + Number(step)).toFixed(2);
+          var box = document.getElementById('amountBoxWrap');
+          box.style.transform = 'scale(1.02)';
+          setTimeout(function () { box.style.transform = 'scale(1)'; }, 120);
+        },
+
+        clearAmount: function () {
+          var input = document.getElementById('amountInput');
+          input.value = '';
+          input.focus();
+        },
+
+        quickFill: function (noteText, catId, defaultAmt) {
+          document.getElementById('noteInput').value = noteText;
+          selectedCategory = catId;
+          updateCategoryPickerButtons();
+          var amtInput = document.getElementById('amountInput');
+          if (!amtInput.value && defaultAmt) {
+            amtInput.value = Number(defaultAmt).toFixed(2);
+          }
+          showToast('Filled "' + noteText + '" — tap Add Expense!', false);
+        },
+
+        handleSubmit: function (e) {
+          if (e && e.preventDefault) e.preventDefault();
+          var amtInput = document.getElementById('amountInput');
+          var noteInput = document.getElementById('noteInput');
+          var dateInput = document.getElementById('dateInput');
+
+          var val = parseFloat(amtInput.value);
+          if (isNaN(val) || val <= 0) {
+            showToast('Please enter a valid amount greater than 0', false);
+            amtInput.focus();
+            return false;
+          }
+
+          var chosenDate = dateInput.value || getTodayISO(0);
+          var noteVal = (noteInput.value || '').trim();
+
+          if (editingId) {
+            for (var i = 0; i < expenses.length; i++) {
+              if (expenses[i].id === editingId) {
+                expenses[i].amount = val;
+                expenses[i].category = selectedCategory;
+                expenses[i].note = noteVal;
+                expenses[i].date = chosenDate;
+                break;
+              }
+            }
+            window.WT.cancelEdit();
+            showToast('Changes saved ✓', false);
+          } else {
+            expenses.push({
+              id: 'tx_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+              amount: val,
+              category: selectedCategory,
+              note: noteVal,
+              date: chosenDate,
+              createdAt: Date.now()
+            });
+            amtInput.value = '';
+            noteInput.value = '';
+            showToast('Expense added ✓', false);
+          }
+
+          saveState();
+          var parts = chosenDate.split('-');
+          if (parts.length === 3) {
+            viewedYear = parseInt(parts[0], 10);
+            viewedMonth = parseInt(parts[1], 10) - 1;
+          }
+          render();
+          return false;
+        },
+
+        editTx: function (id) {
+          var target = null;
+          for (var i = 0; i < expenses.length; i++) {
+            if (expenses[i].id === id) {
+              target = expenses[i];
+              break;
+            }
+          }
+          if (!target) return;
+
+          editingId = target.id;
+          document.getElementById('amountInput').value = target.amount;
+          document.getElementById('noteInput').value = target.note || '';
+          document.getElementById('dateInput').value = target.date;
+          selectedCategory = target.category;
+          updateCategoryPickerButtons();
+
+          document.getElementById('formTitleText').textContent = '✏️ Edit Expense';
+          document.getElementById('submitExpenseBtn').textContent = '💾 Save Changes';
+          document.getElementById('cancelEditBtn').style.display = 'inline-block';
+          document.getElementById('editingBanner').classList.add('show');
+
+          var card = document.getElementById('expenseFormCard');
+          if (card && card.scrollIntoView) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          showToast('Editing "' + (target.note || target.category) + '"', false);
+        },
+
+        cancelEdit: function () {
+          editingId = null;
+          document.getElementById('amountInput').value = '';
+          document.getElementById('noteInput').value = '';
+          document.getElementById('dateInput').value = getTodayISO(0);
+          document.getElementById('formTitleText').textContent = '➕ Quick Add Expense';
+          document.getElementById('submitExpenseBtn').textContent = '＋ Add Expense';
+          document.getElementById('cancelEditBtn').style.display = 'none';
+          document.getElementById('editingBanner').classList.remove('show');
+        },
+
+        deleteTx: function (id) {
+          for (var i = 0; i < expenses.length; i++) {
+            if (expenses[i].id === id) {
+              lastDeleted = expenses[i];
+              expenses.splice(i, 1);
+              break;
+            }
+          }
+          if (editingId === id) window.WT.cancelEdit();
+          saveState();
+          render();
+          showToast('Expense deleted', true);
+        },
+
+        undoDelete: function () {
+          if (lastDeleted) {
+            expenses.push(lastDeleted);
+            lastDeleted = null;
+            saveState();
+            render();
+            showToast('Expense restored ✓', false);
+          }
+        },
+
+        openBudgetModal: function () {
+          var modal = document.getElementById('budgetModal');
+          var input = document.getElementById('budgetModalInput');
+          var desc = document.getElementById('budgetModalDesc');
+          desc.textContent = 'Enter your monthly budget in ' + CURRENCIES[currencyIdx].code;
+          input.value = monthlyBudget;
+          modal.classList.add('open');
+          setTimeout(function () { input.focus(); input.select(); }, 60);
+        },
+
+        closeBudgetModal: function () {
+          document.getElementById('budgetModal').classList.remove('open');
+        },
+
+        saveBudgetModal: function () {
+          var val = parseFloat(document.getElementById('budgetModalInput').value);
+          if (!isNaN(val) && val > 0) {
+            monthlyBudget = val;
+            saveState();
+            render();
+            showToast('Monthly budget updated ✓', false);
+          }
+          window.WT.closeBudgetModal();
+        },
+
+        openClearModal: function () {
+          document.getElementById('clearModal').classList.add('open');
+        },
+
+        closeClearModal: function () {
+          document.getElementById('clearModal').classList.remove('open');
+        },
+
+        confirmClearAll: function () {
+          expenses = [];
+          window.WT.cancelEdit();
+          saveState();
+          render();
+          window.WT.closeClearModal();
+          showToast('All expenses cleared', false);
+        },
+
+        restoreSamples: function () {
+          expenses = createSampleExpenses();
+          viewedYear = now.getFullYear();
+          viewedMonth = now.getMonth();
+          activeCategoryFilter = null;
+          saveState();
+          render();
+          showToast('Sample expenses restored ✓', false);
+        }
+      };
+
+      updateCategoryPickerButtons();
+      render();
+    })();
+  </script>
+</body>
+</html>
